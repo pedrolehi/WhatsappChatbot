@@ -7,7 +7,9 @@ const server = Fastify({ logger: true });
 
 server.register(webhookRoutes);
 
-server.listen({ port: 3000 }, (err, address) => {
+const port = process.env.PORT;
+
+server.listen({ port: Number(port) }, (err, address) => {
   if (err) {
     server.log.error(err);
     process.exit(1);
