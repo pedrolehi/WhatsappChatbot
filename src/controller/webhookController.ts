@@ -1,16 +1,15 @@
 import { validationSchema, WebhookInput } from "@/schemas/webhookSchema";
 import { getOpenAIResponse } from "@/services/openaiService";
-import axios from "axios";
+import { sendWhatsAppMessage } from "@/services/whatsappService"; // Importa o serviço de envio de mensagens
 import { FastifyRequest, FastifyReply } from "fastify";
 
-const WHATSAPP_API_URL = `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PRONE_ID}/messages`;
-const VERIFY_TOKEN = "12345678";
+const VERIFY_TOKEN = "12345678"; // Token de verificação
 
+// Função para lidar com mensagens recebidas pelo webhook
 export async function handleWebhook(
   request: FastifyRequest<{ Body: WebhookInput }>,
   reply: FastifyReply
 ) {
-  // Log do corpo da requisição
   console.log("Corpo da requisição recebido:", request.body);
 
   const { messages } = request.body.entry[0].changes[0].value;
@@ -20,26 +19,15 @@ export async function handleWebhook(
     const senderNumber = messages[0].from;
 
     try {
-      const replyMessage = await getOpenAIResponse(userMessage); // Serviço OpenAI
+      // Chama o serviço OpenAI para gerar a resposta
+      const replyMessage = await getOpenAIResponse(userMessage);
 
-      await axios.post(
-        WHATSAPP_API_URL,
-        {
-          messaging_product: "whatsapp",
-          to: senderNumber,
-          text: { body: replyMessage },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.WHATSAPP_ACCESS_TOKEN}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // Chama o serviço de envio de mensagens para enviar a resposta ao usuário
+      await sendWhatsAppMessage(senderNumber, replyMessage);
 
       reply.status(200).send({ status: "success" });
     } catch (error) {
-      request.log.error(error);
+      request.log.error("Erro ao enviar mensagem:", error);
       reply.status(500).send({ error: "Failed to send message" });
     }
   } else {
@@ -47,12 +35,13 @@ export async function handleWebhook(
   }
 }
 
+// Função para lidar com a validação do webhook
 export async function handleValidation(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
-    // Valida os parâmetros da query com o schema do Zod
+    // Valida os parâmetros da query usando o Zod
     const queryParams = validationSchema.parse(request.query);
 
     const { "hub.verify_token": verifyToken, "hub.challenge": challenge } =
@@ -60,12 +49,12 @@ export async function handleValidation(
 
     // Verifica o token de verificação
     if (verifyToken === VERIFY_TOKEN) {
-      return reply.send(challenge); // Responde com o challenge para a verificação
+      return reply.send(challenge); // Responde com o desafio para a verificação
     } else {
       return reply.status(403).send("Invalid token."); // Retorna erro se o token for inválido
     }
   } catch (error) {
-    // Se a validação falhar, retorna um erro
+    // Retorna erro se a validação falhar
     return reply.status(400).send({ error: "Invalid request parameters" });
   }
 }

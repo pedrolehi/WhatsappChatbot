@@ -6,9 +6,9 @@ import {
 } from "@/controller/webhookController";
 
 async function webhookRoutes(server: FastifyInstance) {
-  server.get("/webhook", { handler: handleValidation });
+  server.get("/v1/webhook", { handler: handleValidation });
 
-  server.post("/webhook", {
+  server.post("/v1/webhook", {
     // schema: {
     //   body: webhookSchema,
     // },

@@ -1,9 +1,12 @@
 import axios from "axios";
 
 const WHATSAPP_API_URL = `https://graph.facebook.com/v21.0/${process.env.WHATSAPP_PHONE_ID}/messages`;
+console.log("Access Token:", process.env.WHATSAPP_TOKEN);
+console.log("Phone ID:", process.env.WHATSAPP_PHONE_ID);
 
 export async function sendWhatsAppMessage(to: string, body: string) {
   try {
+    // O corpo da requisição deve ser o segundo parâmetro
     await axios.post(
       WHATSAPP_API_URL,
       {
@@ -19,7 +22,7 @@ export async function sendWhatsAppMessage(to: string, body: string) {
       }
     );
   } catch (error) {
-    console.error("Failed to send Whatsapp message:", error);
+    console.error("Failed to send WhatsApp message:", error);
     throw new Error("Failed to send message.");
   }
 }
