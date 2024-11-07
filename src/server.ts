@@ -9,7 +9,7 @@ server.register(webhookRoutes);
 
 const port = process.env.PORT;
 
-server.listen({ port: Number(port) }, (err, address) => {
+server.listen({ port: Number(port), host: "0.0.0.0" }, (err, address) => {
   if (err) {
     server.log.error(err);
     process.exit(1);
