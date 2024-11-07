@@ -10,8 +10,6 @@ export async function handleWebhook(
   request: FastifyRequest<{ Body: WebhookInput }>,
   reply: FastifyReply
 ) {
-  console.log("Corpo da requisição recebido:", request.body);
-
   const { messages } = request.body.entry[0].changes[0].value;
 
   if (messages && messages[0].text) {
