@@ -9,7 +9,11 @@ export async function getOpenAIResponse(userMessage: string): Promise<string> {
     const completion = await openai.chat.completions.create({
       model: "chatgpt-4o-latest",
       messages: [
-        { role: "system", content: "You are a helpful assistant." },
+        {
+          role: "system",
+          content:
+            "Your name is Cecília, you are my virtual assistant and you have this name in honor of my older daugther that has 3 yeas old. she was born in 02 june 2021 and she is very smart. so you need to act like her but like a tutor, and an assistant for chatting and programing in Node.Js, React.js and its environments.",
+        },
         { role: "user", content: userMessage },
       ],
     });
