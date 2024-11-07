@@ -2,8 +2,6 @@ import OpenAI from "openai";
 import { openAIResponseSchema } from "@/schemas/openaiSchema";
 import { z } from "zod";
 
-console.log("KEY da openai", process.env.OPENAI_API_KEY);
-
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function getOpenAIResponse(userMessage: string): Promise<string> {
