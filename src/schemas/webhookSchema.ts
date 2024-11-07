@@ -29,3 +29,9 @@ export const webhookSchema = z.object({
 });
 
 export type WebhookInput = z.infer<typeof webhookSchema>;
+
+// Define o schema para a query da requisição
+export const validationSchema = z.object({
+  "hub.verify_token": z.string(),
+  "hub.challenge": z.string(),
+});
