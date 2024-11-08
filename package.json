@@ -17,11 +17,13 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@types/supertest": "^6.0.2",
 		"axios": "^1.7.7",
 		"dotenv": "^16.4.5",
 		"fastify": "^5.1.0",
 		"fastify-type-provider-zod": "^4.0.2",
-		"openai": "^4.71.1"
+		"openai": "^4.71.1",
+		"supertest": "^7.0.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.5.14",

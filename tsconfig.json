@@ -6,12 +6,13 @@
 				"*"
 			] // Mapeia @ para dentro do diretório src
 		},
-		"target": "ES2021",
+		"target": "ESNext",
 		"module": "CommonJS",
 		"outDir": "./dist",
 		"rootDir": "./src",
 		"strict": true,
-		"moduleResolution": "node"
+		"moduleResolution": "node",
+		"esModuleInterop": true
 	},
 	"include": [
 		"src"

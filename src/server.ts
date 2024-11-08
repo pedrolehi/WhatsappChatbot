@@ -16,3 +16,5 @@ server.listen({ port: Number(port), host: "0.0.0.0" }, (err, address) => {
   }
   console.log(`Server is now listening ton ${address}`);
 });
+
+export default server;

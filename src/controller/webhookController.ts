@@ -10,25 +10,42 @@ export async function handleWebhook(
   request: FastifyRequest<{ Body: WebhookInput }>,
   reply: FastifyReply
 ) {
-  const { messages } = request.body.entry[0].changes[0].value;
+  const { body } = request; // Obtenha o corpo da requisição
 
-  if (messages && messages[0].text) {
-    const userMessage = messages[0].text.body;
-    const senderNumber = messages[0].from;
+  // Verifique se a estrutura necessária existe no corpo da requisição
+  if (
+    body.entry &&
+    Array.isArray(body.entry) &&
+    body.entry[0]?.changes &&
+    Array.isArray(body.entry[0]?.changes) &&
+    body.entry[0]?.changes[0]?.value?.messages &&
+    Array.isArray(body.entry[0]?.changes[0]?.value?.messages)
+  ) {
+    const messages = body.entry[0].changes[0].value.messages;
 
-    try {
-      // Chama o serviço OpenAI para gerar a resposta
-      const replyMessage = await getOpenAIResponse(userMessage);
+    // Verifique se a primeira mensagem contém texto
+    if (messages[0]?.text) {
+      const userMessage = messages[0].text.body;
+      const senderNumber = messages[0].from;
 
-      // Chama o serviço de envio de mensagens para enviar a resposta ao usuário
-      await sendWhatsAppMessage(senderNumber, replyMessage);
+      try {
+        // Chama o serviço OpenAI para gerar a resposta
+        const replyMessage = await getOpenAIResponse(userMessage);
 
-      reply.status(200).send({ status: "success" });
-    } catch (error) {
-      request.log.error("Erro ao enviar mensagem:", error);
-      reply.status(500).send({ error: "Failed to send message" });
+        // Chama o serviço de envio de mensagens para enviar a resposta ao usuário
+        await sendWhatsAppMessage(senderNumber, replyMessage);
+
+        reply.status(200).send({ status: "success" });
+      } catch (error) {
+        request.log.error("Erro ao enviar mensagem:", error);
+        reply.status(500).send({ error: "Failed to send message" });
+      }
+    } else {
+      // Caso não exista texto na mensagem
+      reply.status(400).send({ error: "Invalid message format" });
     }
   } else {
+    // Caso a estrutura esperada não esteja presente
     reply.status(400).send({ error: "Invalid message format" });
   }
 }
